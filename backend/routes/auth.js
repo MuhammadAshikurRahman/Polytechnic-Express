@@ -4,17 +4,17 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const User = require('../models/User');
 
-const JWT_SECRET = 'your_jwt_secret_key_here'; // নিরাপদে .env ফাইলে রাখুন
-const OTP_STORE = {}; // OTP সংরক্ষণ
+const JWT_SECRET = process.env.JWT_SECRET;
+const OTP_STORE = {};
 
-// Nodemailer সেটআপ
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'mdashikurrahman50000@gmail.com',
-    pass: 'waqvxgfitlmwualm' // Gmail App Password
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
   }
 });
+
 
 // ১. OTP পাঠানো
 router.post('/send-otp', async (req, res) => {

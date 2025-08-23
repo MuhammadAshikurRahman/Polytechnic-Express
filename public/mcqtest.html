@@ -5,7 +5,12 @@
   <title>MCQ কোর্স</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@100..800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@100..800&family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">
   <style>
+
+    body, button, input, select, textarea, h1, h2, h3, h4, h5, h6, p, span, a {
+      font-family: 'Tiro Bangla', serif !important;
+    }
     body {
       margin: 0;
       font-family: 'Anek Bangla', sans-serif;
@@ -95,6 +100,7 @@
       border-radius: 10px;
       box-shadow: 0 0 5px rgba(0,0,0,0.1);
       min-height: 200px;
+      
     }
 
     .start-button {
@@ -176,45 +182,60 @@
       </div>
     </div>
 
-    <div class="layout">
-      <div class="sidebar">
-        <div class="subject-group">
-          <button class="subject-toggle">গণিত</button>
-          <div class="test-list">
-            <!-- এখানে data-অ্যাট্রিবিউট দিয়ে সাবজেক্ট, চ্যাপ্টার, সময়, মার্কস পাঠানো -->
-            <button onclick="showTestDetails(this)" 
-              data-subject="math" 
-              data-chapter="math-1" 
-              data-time="30" 
-              data-question="30"
-              data-mark="30">Model Test 1</button>
-            <button onclick="showTestDetails(this)" 
-              data-subject="গণিত" 
-              data-chapter="মডেল টেস্ট ২" 
-              data-time="৩০" 
-              data-question="20"
-              data-mark="২৫">Model Test 2</button>
-    
-          </div>
-        </div>
-        <div class="subject-group">
-          <button class="subject-toggle">পদার্থ</button>
-          <div class="test-list">
-            <button onclick="showTestDetails(this)" 
-              data-subject="পদার্থ" 
-              data-chapter="মডেল টেস্ট ১" 
-              data-time="৩০" 
-              data-mark="২৫">Model Test 1</button>
-          </div>
-        </div>
+<div class="layout">
+  <div class="sidebar">
+    <div class="subject-group">
+      <button class="subject-toggle">গণিত</button>
+      <div class="test-list">
+        <button onclick="showTestDetails(this)" 
+          data-subject="math" 
+          data-chapter="math-1" 
+          data-time="30" 
+          data-question="30"
+          data-mark="30">Model Test 1</button>
+        <button onclick="showTestDetails(this)" 
+          data-subject="গণিত" 
+          data-chapter="মডেল টেস্ট ২" 
+          data-time="৩০" 
+          data-question="20"
+          data-mark="২৫">Model Test 2</button>
       </div>
+    </div>
 
-      <div class="test-details" id="testDetails">
-        <h2>টেস্ট সিলেক্ট করুন</h2>
-        <p>আপনি যেকোনো একটি মডেল টেস্ট বেছে নিন।</p>
+    <div class="subject-group">
+      <button class="subject-toggle">পদার্থ</button>
+      <div class="test-list">
+        <button onclick="showTestDetails(this)" 
+          data-subject="পদার্থ" 
+          data-chapter="মডেল টেস্ট ১" 
+          data-time="৩০" 
+          data-question="20"
+          data-mark="২৫">Model Test 1</button>
+      </div>
+    </div>
+
+    <div class="subject-group">
+      <button class="subject-toggle">বাংলা+গণিত</button>
+      <div class="test-list">
+        <button onclick="showCombinedTest(this)" 
+          data-subject="bangla+math+phy" 
+          data-sub-qs-bangla="15"
+          data-sub-qs-math="1"
+          data-sub-qs-phy="14"
+          data-time="30" 
+          data-mark="30"
+          data-question="30">বাংলা+গণিত</button>
       </div>
     </div>
   </div>
+
+  <!-- ✅ এইটা .layout-এর ভিতরে, কিন্তু .sidebar-এর বাইরে -->
+  <div class="test-details" id="testDetails">
+    <h2>টেস্ট সিলেক্ট করুন</h2>
+    <p>আপনি যেকোনো একটি মডেল টেস্ট বেছে নিন।</p>
+  </div>
+</div>
+
 
   <script>
     // সাবজেক্ট টগল করবো
@@ -255,6 +276,41 @@
       checkTestAccess(user);
     }
 
+
+    
+    function showCombinedTest(button) {
+  const subjectStr = button.getAttribute('data-subject'); // eg. "bangla+math"
+  const subjects = subjectStr.split('+'); // ["bangla", "math"]
+  const time = button.getAttribute('data-time');
+  const mark = button.getAttribute('data-mark');
+  const question = button.getAttribute('data-question');
+
+  const subjectConfig = {};
+  subjects.forEach(sub => {
+    const key = `data-sub-qs-${sub}`;
+    subjectConfig[sub] = parseInt(button.getAttribute(key)) || 0;
+  });
+
+  const configEncoded = encodeURIComponent(JSON.stringify(subjectConfig));
+  const url = `mcqexam.html?mode=combined&config=${configEncoded}&time=${time}&mark=${mark}&data-question=${question}&random=true`;
+
+  // ✅ UI তে টেস্ট ডিটেইল দেখাও
+  const testDetails = document.getElementById('testDetails');
+  testDetails.innerHTML = `
+    <h2>কম্বাইন্ড টেস্ট</h2>
+    <p>এই পরীক্ষায় থাকবে মোট ${question}টি প্রশ্ন। সময়: ${time} মিনিট।</p>
+    <a href="${url}" id="startTestBtn" class="start-button disabled">🟢 টেস্ট শুরু করুন</a>
+    <div id="startMessage" style="margin-top: 10px; font-weight: bold;"></div>
+  `;
+
+  window.scrollTo({ top: testDetails.offsetTop - 30, behavior: 'smooth' });
+
+  // ✅ পেমেন্ট চেক করে access দিবে
+  const user = JSON.parse(localStorage.getItem('user'));
+  checkTestAccess(user);
+}
+
+
     // পেমেন্ট চেক করে টেস্ট শুরু লিংক সক্রিয় বা নিষ্ক্রিয় করবে
     async function checkTestAccess(user) {
       const btn = document.getElementById('startTestBtn');
@@ -273,7 +329,7 @@
 
         const match = payments.find(p =>
           p.phone === user.phone &&
-          p.courseId === 'mcq_course' &&
+          p.courseId === 'mcq_course price_499' &&
           p.status === 'approved'
         );
 
@@ -307,7 +363,7 @@
       const method = document.getElementById('method').value;
       const instructions = document.getElementById('instructions');
       instructions.textContent = method === 'bkash'
-        ? 'বিকাশ পার্সোনাল নম্বরে Send Money করুন: 01XXXXXXXXX'
+        ? 'বিকাশ পার্সোনাল নম্বরে Send Money করুন: 01877035408'
         : 'নগদ পার্সোনাল নম্বরে Send Money করুন: 01YYYYYYYYY';
     }
 
@@ -374,7 +430,7 @@
 
         const match = payments.find(p =>
           p.phone === user.phone &&
-          p.courseId === 'mcq_course' &&
+          p.courseId === 'mcq_course price_499' &&
           p.status === 'approved'
         );
 

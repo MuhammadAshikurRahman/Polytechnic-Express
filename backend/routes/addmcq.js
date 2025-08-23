@@ -122,5 +122,38 @@ router.get('/questions', async (req, res) => {
 
 
 
+// Route: /api/mcq/combined-test (multiple subjects)
+// এই রুটটি "বিভিন্ন সাবজেক্ট" থেকে প্রশ্ন নিয়ে একটি কম্বাইন্ড টেস্ট তৈরি করবে
+const MCQ = require('../models/mcq'); // MCQ মডেলটি এখানে ব্যবহার
+router.post('/combined-test', async (req, res) => {
+  const subjectConfig = req.body.subjectConfig;
+  if (!subjectConfig || typeof subjectConfig !== 'object') {
+    return res.status(400).json({ error: 'Invalid subjectConfig' });
+  }
+
+  try {
+    let finalQuestions = [];
+
+    for (const [subject, limit] of Object.entries(subjectConfig)) {
+      const questions = await MCQ.aggregate([
+        { $match: { subject } },
+        { $sample: { size: limit } }
+      ]);
+      finalQuestions.push(...questions);
+    }
+
+    // Optional shuffle
+    finalQuestions = finalQuestions.sort(() => 0.5 - Math.random());
+
+    res.json(finalQuestions);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to load combined MCQ' });
+  }
+});
+
+
+
+
 
 module.exports = router;

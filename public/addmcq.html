@@ -4,9 +4,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@100..800&display=swap" rel="stylesheet">
   <meta charset="UTF-8" />
   <title>MCQ ম্যানেজমেন্ট</title>
+    <link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@100..800&family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">
   <style>
+    body, button, input, select, textarea, h1, h2, h3, h4, h5, h6, p, span, a {
+      font-family: 'Tiro Bangla', serif !important;
+    }
     * { box-sizing: border-box; }
-    body { font-family: Anek Bangla; background: #f2f2f2; padding: 1rem; margin: 0; }
+    body { background: #f2f2f2; padding: 1rem; margin: 0; }
     .box, .mcq-list {
       background: white;
       padding: 1rem;
@@ -118,13 +122,23 @@
   <script>
     const subjectList = [
       { name: 'গণিত', code: 'math' },
-      { name: 'পদার্থ', code: 'phy' }
+      { name: 'পদার্থ', code: 'phy' },
+      { name: 'রসায়ন', code: 'chem' },
+      { name: 'ইংরেজি', code: 'eng' },
+      { name: 'বাংলা', code: 'ban' },
+      { name: 'সাধারণ জ্ঞান', code: 'gk' }
     ];
 
     const chapterList = [
       { name: 'সংখ্যা পদ্ধতি', code: 'math-1', subjectCode: 'math' },
       { name: 'অ্যালজেব্রা', code: 'math-2', subjectCode: 'math' },
-      { name: 'চাপ ও বল', code: 'phy-1', subjectCode: 'phy' }
+      { name: 'চাপ ও বল', code: 'phy-1', subjectCode: 'phy' },
+      { name: 'গতি ও গতিশীলতা', code: 'phy-2', subjectCode: 'phy' },
+      { name: 'অ্যাসিড ও বেস', code: 'chem-1', subjectCode: 'chem' },
+      { name: 'অর্গানিক রসায়ন', code: 'chem-2', subjectCode: 'chem' },
+      { name: 'ইংরেজি ব্যাকরণ', code: 'eng-1', subjectCode: 'eng' },
+      { name: 'বাংলা সাহিত্য', code: 'ban-1', subjectCode: 'ban' },
+      { name: 'বাংলাদেশের ইতিহাস', code: 'gk-1', subjectCode: 'gk' }
     ];
 
     let currentSubject = '';
@@ -309,5 +323,22 @@
       }
     }
   </script>
+
+  <script>
+
+  // here all is ok.
+const loggedInUser = JSON.parse(localStorage.getItem('user'));
+const token = localStorage.getItem('token');
+
+if (!loggedInUser || !token || loggedInUser.role !== 'admin') {
+  alert("❌ আপনি অ্যাডমিন নন।");
+  // ইউজার লগইন করেনি অথবা রোল 'admin' না
+  window.location.href = '/home.html'; // অথবা অন্য কোনো নো এন্ট্রি পেজ
+} else {
+  console.log("লগইন করা অ্যাডমিন ইউজার:", loggedInUser);
+  // এখানে অ্যাডমিন ইউজারের জন্য পেজ কাস্টমাইজ করো   
+}
+
+</script>
 </body>
 </html>

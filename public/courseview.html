@@ -9,7 +9,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@100..800&family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">
+
   <style>
+    body, button, input, select, textarea, h1, h2, h3, h4, h5, h6, p, span, a {
+      font-family: 'Tiro Bangla', serif !important;
+    }
+    .navbar {
+      background-color: #f8f9fa;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
     body {
       background-color: #f8f9fa;
       color: #212529;
@@ -133,9 +142,9 @@
     </button>
     <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
       <ul class="navbar-nav" id="nav-links">
-        <li class="nav-item"><a class="nav-link active" href="#">হোম</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">কোর্সসমূহ</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">যোগাযোগ</a></li>
+        <li class="nav-item"><a class="nav-link active" href="home.html">হোম</a></li>
+        <li class="nav-item"><a class="nav-link" href="home.html#courses-container">কোর্সসমূহ</a></li>
+        <li class="nav-item"><a class="nav-link" href="#footer">যোগাযোগ</a></li>
         <!-- এখানে JS দিয়ে লগইন বা প্রোফাইল যুক্ত হবে -->
       </ul>
     </div>
@@ -167,7 +176,13 @@
   </div>
 </div>
 
-  <footer class="bg-dark text-white text-center py-4 mt-5">
+<div class="d-flex justify-content-center mt-3">
+  <a href="mcqtest.html" class="btn btn-outline-warning w-80 fw-bold">
+    📘 MCQ টেস্ট দিন
+  </a>
+</div>
+
+  <footer id="footer" class="bg-dark text-white text-center py-4 mt-5">
     <div class="container">
       <p>© ২০২৫ Polytechnic Express | সকল অধিকার সংরক্ষিত</p>
     </div>
@@ -186,18 +201,16 @@
       if (!res.ok) throw new Error("কোর্স পাওয়া যায়নি");
       const course = await res.json();
 
-      const mentorHtml = (course.mentors && course.mentors.length > 0)
-        ? course.mentors.map(m => `
-          <div class="mentor-card mb-3">
-            <img src="${m.photo || 'https://via.placeholder.com/80'}" alt="Mentor Photo" />
-            <div>
-              <h5>${m.name}</h5>
-              <p class="mb-1">${m.designation || ''}</p>
-              <small>${m.bio || ''}</small>
-            </div>
-          </div>
-        `).join('')
-        : `<p>মেন্টর তথ্য পাওয়া যায়নি।</p>`;
+const mentorHtml = (course.mentors && course.mentors.length > 0)
+  ? course.mentors.map(name => `
+      <div class="mentor-card mb-3">
+        <div>
+          <h5>${name}</h5>
+        </div>
+      </div>
+    `).join('')
+  : `<p>মেন্টর তথ্য পাওয়া যায়নি।</p>`;
+
 
       let subjectsHtml = "";
       if (Array.isArray(course.subjects) && course.subjects.length) {
@@ -587,7 +600,7 @@ function handleBuyNow() {
   const sendTo = document.getElementById('sendToNumber');
 
   if (method === 'bkash') {
-    sendTo.textContent = 'বিকাশ নম্বরে Send Money করুন: 01XXXXXXXXX';
+    sendTo.textContent = 'বিকাশ নম্বরে Send Money করুন: 01877035408';
     sendTo.classList.remove('d-none');
   } else if (method === 'nagad') {
     sendTo.textContent = 'নগদ নম্বরে Send Money করুন: 01YYYYYYYYY';
@@ -654,6 +667,46 @@ function handleBuyNow() {
     }
   }
 </script>
+
+
+  // Disable right-click and keyboard shortcuts
+  // This script prevents right-click context menu and common developer tools shortcuts
+  <script>
+  // Right-click disable
+  document.addEventListener('contextmenu', e => e.preventDefault());
+
+  // Keyboard shortcuts block (F12, Ctrl+Shift+I/J/C, Ctrl+U, Ctrl+S)
+  document.addEventListener('keydown', function (e) {
+    // Block F12
+    if (e.key === 'F12') {
+      e.preventDefault();
+      return false;
+    }
+
+    // Block Ctrl+Shift+I/J/C
+    if (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) {
+      e.preventDefault();
+      return false;
+    }
+
+    // Block Ctrl+U, Ctrl+S, Ctrl+A
+    if (e.ctrlKey && ['U', 'S', 'A'].includes(e.key.toUpperCase())) {
+      e.preventDefault();
+      return false;
+    }
+  });
+
+  // Periodic check to detect if DevTools is open
+  setInterval(() => {
+    const before = new Date();
+    debugger;
+    const after = new Date();
+    if (after - before > 100) {
+      document.body.innerHTML = '<h1 style="text-align:center; margin-top:100px;">Dev Tools Detected! পেজ বন্ধ করে দিন।</h1>';
+    }
+  }, 1000);
+</script>
+
 
 
 </body>

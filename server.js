@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
+require('dotenv').config(); 
 
 const coursesRouter = require('./backend/routes/courses');
 const UserRouter = require('./backend/routes/auth');
@@ -18,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // MongoDB connection
-mongoose.connect('mongodb+srv://mdashikurrahman50000:uel4Zcf5Rkj1DtU9@cluster0.dasvi.mongodb.net/polytechex?retryWrites=true&w=majority')
+mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('✅ MongoDB connected'))
   .catch(err => console.error('❌ DB Error:', err));
 
@@ -32,7 +33,7 @@ app.use('/api/mcq', mcqRoutes);
 
 // Root route
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'contentmanage.html'));
+  res.sendFile(path.join(__dirname, 'public', 'home.html'));
 });
 
 // Start server

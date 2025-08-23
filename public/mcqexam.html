@@ -4,7 +4,12 @@
   <meta charset="UTF-8">
   <title>MCQ পরীক্ষা</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@100..800&family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">
   <style>
+    body, button, input, select, textarea, h1, h2, h3, h4, h5, h6, p, span, a {
+      font-family: 'Tiro Bangla', serif !important;
+    }
+
     body {
       font-family: Arial, sans-serif;
       background: #f5f7fa;
@@ -104,6 +109,13 @@
     const randomize = urlParams.get('random') === 'true';
 
 
+
+const isCombined = urlParams.get('mode') === 'combined';
+const subjectConfigRaw = urlParams.get('config');
+const subjectConfig = subjectConfigRaw ? JSON.parse(decodeURIComponent(subjectConfigRaw)) : null;
+
+
+
     let currentQuestions = [];
     let answers = {};
     let timerInterval;
@@ -122,23 +134,56 @@
     }
 
 function loadQuestions() {
-  fetch(`/api/mcq/by-chapter?subject=${subject}&chapter=${chapter}`)
-    .then(res => res.json())
-    .then(data => {
-      let selected = data;
+  if (isCombined && subjectConfig) {
+    // Combined mode: POST request with subjectConfig
+    fetch('/api/mcq/combined-test', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ subjectConfig })
+    })
+      .then(res => res.json())
+      .then(data => {
+        let selected = data.slice();
 
-      if (randomize) {
-        // Shuffle function
-        for (let i = selected.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [selected[i], selected[j]] = [selected[j], selected[i]];
+        if (randomize) {
+          // Shuffle array
+          for (let i = selected.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [selected[i], selected[j]] = [selected[j], selected[i]];
+          }
         }
-      }
 
-      currentQuestions = selected.slice(0, questionLimit);
-      renderQuestions();
-    });
+        currentQuestions = selected.slice(0, questionLimit);
+        renderQuestions();
+      })
+      .catch(err => {
+        console.error('❌ Combined MCQ fetch error:', err);
+      });
+
+  } else {
+    // Single subject + chapter mode: GET request with query params
+    fetch(`/api/mcq/by-chapter?subject=${encodeURIComponent(subject)}&chapter=${encodeURIComponent(chapter)}`)
+      .then(res => res.json())
+      .then(data => {
+        let selected = data.slice();
+
+        if (randomize) {
+          // Shuffle array
+          for (let i = selected.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [selected[i], selected[j]] = [selected[j], selected[i]];
+          }
+        }
+
+        currentQuestions = selected.slice(0, questionLimit);
+        renderQuestions();
+      })
+      .catch(err => {
+        console.error('❌ MCQ by chapter fetch error:', err);
+      });
+  }
 }
+
 
 
     function renderQuestions() {
@@ -239,5 +284,38 @@ function loadQuestions() {
       updateTimer();
     }
   </script>
+
+
+  <script>
+  const user = JSON.parse(localStorage.getItem('user'));
+
+  // Step 1: লগইন চেক
+  if (!user || !user.phone) {
+    alert("⚠️ আপনাকে আগে লগইন করতে হবে।");
+    window.location.href = "login.html";
+  } else {
+    // Step 2: পেমেন্ট স্ট্যাটাস চেক
+    fetch('/api/payments/all')
+      .then(res => res.json())
+      .then(payments => {
+        const match = payments.find(p =>
+          p.phone === user.phone &&
+          p.courseId === 'mcq_course price_499' &&
+          p.status === 'approved'
+        );
+
+        if (!match) {
+          alert("⛔ আপনি এখনও এই পরীক্ষার অনুমোদন পাননি।");
+          window.location.href = "mcqtest.html"; // অথবা অন্য পেজ
+        }
+      })
+      .catch(err => {
+        console.error("❌ পেমেন্ট যাচাই করতে সমস্যা হয়েছে:", err);
+        alert("❌ সার্ভার সমস্যা। পরে চেষ্টা করুন।");
+        window.location.href = "mcqtest.html";
+      });
+  }
+</script>
+
 </body>
 </html>
